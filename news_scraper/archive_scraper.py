@@ -1,13 +1,17 @@
 from typing import List, Dict, Any, Tuple, Optional
 from datetime import datetime
+import logging
 
 from .constants import BASE_DOMAIN
 from .utils import fetch_soup
 
 
+logger = logging.getLogger(__name__)
+
+
 def get_all_categories(archive_homepage_url: str) -> Dict[str, str]:
     """
-    Scrapes the OKX announcements category page and returns a dictionary
+    Scrapes the website's announcements category page and returns a dictionary
     of category slugs and their full URLs.
 
     Args:
@@ -16,7 +20,11 @@ def get_all_categories(archive_homepage_url: str) -> Dict[str, str]:
     Returns:
         Dict[str, str]: Keys are category slugs (e.g., 'earn'), values are full URLs.
     """
-    soup = fetch_soup(archive_homepage_url)
+    try:
+        soup = fetch_soup(archive_homepage_url)
+    except Exception as e:
+        logger.error("Failed to fetch archive homepage %s: %s", archive_homepage_url, e)
+        raise
 
     category_links = {}
 
@@ -57,7 +65,11 @@ def get_articles_on_page(category_url: str, page: int) -> Tuple[List[Dict[str, A
             - Optional[int]: total number of pages (only returned on page 1)
     """
     url = f"{category_url}/page/{page}" if page > 1 else category_url
-    soup = fetch_soup(url, timeout=120)
+    try:
+        soup = fetch_soup(url, timeout=120)
+    except Exception as e:
+        logger.error("Failed to fetch %s: %s", url, e)
+        raise
 
     articles = []
 
@@ -76,7 +88,7 @@ def get_articles_on_page(category_url: str, page: int) -> Tuple[List[Dict[str, A
         try:
             published = datetime.strptime(raw_date, "%b %d, %Y")
         except ValueError as e:
-            print(f"[!] Could not parse date '{raw_date}' on {full_url}: {e}")
+            logger.warning("Could not parse date '%s' on %s: %s", raw_date, full_url, e)
             continue
 
         articles.append({

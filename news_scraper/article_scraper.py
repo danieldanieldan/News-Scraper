@@ -1,10 +1,13 @@
 from typing import Optional, Dict
+import logging
 import requests
-from okx_news_scraper.utils import (
+from news_scraper.utils import (
     find_first_element_by_class_substring,
     html_to_markdown,
     fetch_soup,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def extract_title_and_body(
@@ -61,9 +64,10 @@ def extract_title_and_body(
 
     # Fallback after all retries failed
 
-    print(f"[!] Failed to extract article after {retries} attempts: {url} – {last_error}")
+    logger.warning("Failed to extract article after %d attempts: %s – %s", retries, url, last_error)
     return {
         "url": url,
         "title": f"Failed to extract title: {last_error}" if last_error else "Failed to extract title",
         "body": f"Failed to extract body: {last_error}" if last_error else "Failed to extract body"
     }
+

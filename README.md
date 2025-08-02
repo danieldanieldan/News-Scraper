@@ -1,6 +1,6 @@
-# OKX News Scraper
+# Cryptocurrency Exchange News Scraper
 
-This Python project scrapes news articles from the OKX crypto exchange announcement sections. It allows you to download structured article data (including title, body, category, and publication date) for a given date range and store the results as `.json` and `.xlsx` files.
+This Python project scrapes news articles from a cryptocurrency exchange's announcement section. It downloads structured article data (including title, body, category, and publication date) for a given date range and stores the results as `.json` and `.xlsx` files.
 
 
 ## Features
@@ -25,7 +25,7 @@ This Python project scrapes news articles from the OKX crypto exchange announcem
 
 The scraper is executed from the command line from the root folder of the project using:
 
-    python -m scripts/run_scraper.py START_DATE END_DATE FOLDER
+    python -m scripts.run_scraper START_DATE END_DATE FOLDER
 
 Arguments:
 
@@ -37,7 +37,7 @@ Example:
 
     python -m scripts.run_scraper 2025-01-01 2025-02-01 ./output
 
-This command downloads all OKX announcements published between January 1 and February 1, 2025, and saves them into the ./output folder.
+This command downloads all announcements published between January 1 and February 1, 2025, and saves them into the `./output` folder.
 
 Alternatively, one can import the function run_scraper(start_date: str, end_date: str, folder: str) from scripts.run_scraper and use it normally inside another python file
 
@@ -66,10 +66,12 @@ Inefficient Page Scanning
 Currently, the scraper scans all pages in a category until it finds all articles within the specified range. While effective, this can be slow if the date range is far in the past. A smarter approach using date estimation or binary search could reduce unnecessary page scans.
 
 Threading Limitations
-An earlier version implemented multithreading to speed up downloads, but the OKX website frequently failed under concurrent requests, occasionally omitting articles. Due to time constraints, threading was removed. For future development, it may be worth investigating a more controlled or asynchronous solution that better respects server limits.
+An earlier version implemented multithreading to speed up downloads, but the website sometimes failed under concurrent requests, occasionally omitting articles. Due to time constraints, threading was removed. For future development, it may be worth investigating a more controlled or asynchronous solution that better respects server limits.
 
-Failure detecting
-i'mplement logging, output checking and automated alerting to catach loud and silent errors
+Failure detection
+Implement logging, output checking and automated alerting to catch loud and silent errors.
 
 ## License
+
 This project is provided under the MIT License.
+

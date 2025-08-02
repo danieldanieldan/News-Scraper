@@ -2,7 +2,9 @@ from bs4 import BeautifulSoup, Tag
 from typing import Optional
 import html2text
 import requests
+import logging
 
+logger = logging.getLogger(__name__)
 
 def find_first_element_by_class_substring(
     soup: BeautifulSoup,
@@ -49,7 +51,7 @@ def html_to_markdown(html: str, ignore_links: bool = False, ignore_images: bool 
         return converter.handle(html)
 
     except Exception as e:
-        print(f"[!] html2text failed, falling back to plain text: {e}")
+        logger.warning("html2text failed, falling back to plain text: %s", e)
         soup = BeautifulSoup(html, "html.parser")
         return soup.get_text(separator="\n", strip=True)
     
@@ -70,6 +72,11 @@ def fetch_soup(url: str, headers: Optional[dict] = None, timeout: int = 10) -> B
         requests.RequestException: If the request fails.
     """
 
-    response = requests.get(url, headers=headers, timeout=timeout)
-    response.raise_for_status()
+    try:
+        response = requests.get(url, headers=headers, timeout=timeout)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        logger.error("Request failed for %s: %s", url, e)
+        raise
     return BeautifulSoup(response.text, "html.parser")
+
